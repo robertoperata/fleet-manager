@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/0001-vehicle.sql
+      file: db/changelog/0001-init.sql
+#  - include:
+#      file: db/changelog/0002-vehicle.sql
