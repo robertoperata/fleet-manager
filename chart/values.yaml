@@ -27,12 +27,25 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
+env:
+  DATASOURCE_PASSWORD:
+    valueFrom:
+      secretKeyRef:
+        key: FLEET_DATABASE_PASSWORD
+        name: db-se
+  SPRING_DATASOURCE_URL:
+    value: jdbc:postgresql://$(POSTGRES_HOST):5432/$(FLEET_DATABASE_NAME)
+  DATASOURCE_USERNAME:
+    valueFrom:
+      secretKeyRef:
+        key: FEET_DATABASE_USER
+        name: db-se
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
   type: ClusterIP
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 80
+  port: 8080
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
