@@ -1,12 +1,9 @@
 name: Build and Push Docker Image
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, edited]
+    tags:
+      - 'v*'  # Trigger on tags like v1.0.0, v2.3.1, etc.
 permissions:
   contents: write
 jobs:
