@@ -44,6 +44,19 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            {{- if .Values.env }}
+            {{- toYaml .Values.env | nindent 12 }}
+            {{- end }}
+            {{- if .Values.envOverride }}
+            {{- toYaml .Values.envOverride | nindent 12 }}
+            {{- end }}
+            {{- if .Values.envObject }}
+            {{- range $key, $val := .Values.envObject }}
+            - name: {{ $key }}
+              {{- toYaml $val | nindent 14 }}
+            {{- end }}
+            {{- end }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}

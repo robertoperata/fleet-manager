@@ -59,7 +59,8 @@ public class VehicleController {
             @ApiResponse(responseCode = "422", description = "Entity not valid", content = @Content)
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VehicleDTO> createVehicle(@RequestBody Vehicle vehicle, HttpServletRequest req) {
+    public ResponseEntity<VehicleDTO> createVehicle(@RequestBody VehicleDTO vehicleDTO, HttpServletRequest req) {
+        Vehicle vehicle = vehicleMapper.toEntity(vehicleDTO);
         var vehicleCreated = vehicleService.createVehicle(vehicle);
         String path = req.getServletPath();
         return ResponseEntity
