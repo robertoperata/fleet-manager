@@ -3,7 +3,7 @@ containerPort: 8080
 containerPortName: http
 image:
   repository: priz/fleet-manager
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: latest
   pullSecrets:
     - dockerhub-secret
@@ -14,7 +14,7 @@ serviceAccount:
   create: false
   automount: true
   annotations: {}
-  name: fleet-manager-sa
+  name: default
 
 podAnnotations: {}
 podLabels: {}
@@ -28,17 +28,27 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 env:
-  DATASOURCE_PASSWORD:
+  - name: FLEET_DATABASE_NAME
+    valueFrom:
+      secretKeyRef:
+        key: FLEET_DATABASE_NAME
+        name: db-se
+  - name: POSTGRES_HOST
+    valueFrom:
+      configMapKeyRef:
+        key: POSTGRES_HOST
+        name: db-cm
+  - name: DATASOURCE_PASSWORD
     valueFrom:
       secretKeyRef:
         key: FLEET_DATABASE_PASSWORD
         name: db-se
-  SPRING_DATASOURCE_URL:
-    value: jdbc:postgresql://$(POSTGRES_HOST):5432/$(FLEET_DATABASE_NAME)
-  DATASOURCE_USERNAME:
+  - name: SPRING_DATASOURCE_URL
+    value: jdbc:postgresql://postgres.priz-system.svc.cluster.local:5432/$(FLEET_DATABASE_NAME)
+  - name: DATASOURCE_USERNAME
     valueFrom:
       secretKeyRef:
-        key: FEET_DATABASE_USER
+        key: FLEET_DATABASE_USER
         name: db-se
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
@@ -79,11 +89,11 @@ resources: {}
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe:
   httpGet:
-    path: /actuator/liveness
+    path: /actuator/health/liveness
     port: http
 readinessProbe:
   httpGet:
-    path: /actuator/readiness
+    path: /actuator/health/readiness
     port: http
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
